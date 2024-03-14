@@ -1,8 +1,25 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Home() {
     const [tasks, setTasks] = useState([]);
     const [newTaskText, setNewTaskText] = useState("");
+
+    useEffect(() => {
+        const fetchTasks = async () => {
+            try {
+                const response = await fetch("/api/tasks");
+                if (!response.ok) {
+                    throw new Error("Failed to fetch tasks");
+                }
+                const data = await response.json();
+                setTasks(data);
+            } catch (error) {
+                console.error("Error fetching tasks:", error);
+            }
+        };
+
+        fetchTasks();
+    }, []); // Effectuer la requête une seule fois après le premier rendu
 
     const addTask = async () => {
         try {
@@ -26,13 +43,26 @@ export default function Home() {
         }
     };
 
-    const handleInputChange = (event) => {
-        setNewTaskText(event.target.value);
+    const deleteTask = async (taskId) => {
+        try {
+            const response = await fetch(`/api/task/${taskId}`, {
+                method: "DELETE",
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to delete task");
+            }
+
+            // Si la suppression réussit, mettez à jour l'état des tâches pour exclure la tâche supprimée.
+            setTasks(tasks.filter((task) => task._id !== taskId));
+        } catch (error) {
+            console.error("Erreur lors de la suppression de la tâche", error);
+        }
     };
 
-    const toggleCompletion = (_id) => {
+    const toggleCompletion = (id) => {
         const newTasks = tasks.map((task) => {
-            if (task._id === _id) {
+            if (task.id === id) {
                 return { ...task, completed: !task.completed };
             }
             return task;
@@ -44,7 +74,7 @@ export default function Home() {
         <div>
             <h1>Ma Liste de Tâches</h1>
             <div id="addSection">
-                <input type="text" value={newTaskText} onChange={handleInputChange} placeholder="Nouvelle Tâche" />
+                <input type="text" value={newTaskText} onChange={(e) => setNewTaskText(e.target.value)} />
                 <button className="buttonAdd" onClick={addTask}>
                     Ajouter Tâche
                 </button>
@@ -52,7 +82,7 @@ export default function Home() {
             <ul>
                 {tasks.map((task) => (
                     <li key={task._id} style={{ textDecoration: task.completed ? "line-through" : "none" }}>
-                        <p className="taskTitle">{task.title}</p>
+                        {task.title}
                         <div id="listButtons">
                             <button onClick={() => toggleCompletion(task._id)}>
                                 {task.completed ? "Marquer comme non complétée" : "Marquer comme complétée"}
