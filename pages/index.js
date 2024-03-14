@@ -1,35 +1,53 @@
 import { useState } from 'react';
 
 export default function Home() {
-  const [tasks, setTasks] = useState([
-    { id: 1, text: "Apprendre Next.js", completed: false },
-    { id: 2, text: "Créer une application de liste de tâches", completed: false },
-    { id: 3, text: "Explorer Vercel pour le déploiement", completed: false }
-  ]);
+  const [tasks, setTasks] = useState([]);
+  const [newTaskText, setNewTaskText] = useState('');
 
-  const toggleCompletion = (id) => {
-    const newTasks = tasks.map(task => {
-      if (task.id === id) {
-        return { ...task, completed: !task.completed };
+  const addTask = async () => {
+    try {
+      const response = await fetch('/api/tasks', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ title: newTaskText, completed: false }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Échec de la requête : ${response.status}`);
       }
-      return task;
-    });
-    setTasks(newTasks);
+
+      const newTask = await response.json();
+      setTasks([...tasks, newTask]);
+      setNewTaskText(''); // Efface le champ du formulaire après l'ajout de la tâche
+
+    } catch (error) {
+      console.error('Erreur lors de la création de la tâche', error);
+    }
+  };
+
+  const handleInputChange = (event) => {
+    setNewTaskText(event.target.value);
   };
 
   return (
-    <div>
-      <h1>Ma Liste de Tâches</h1>
-      <ul>
-        {tasks.map((task) => (
-          <li key={task.id} style={{ textDecoration: task.completed ? 'line-through' : 'none' }}>
-            {task.text}
-            <button onClick={() => toggleCompletion(task.id)}>
-              {task.completed ? 'Marquer comme non complétée' : 'Marquer comme complétée'}
-            </button>
-          </li>
-        ))}
-      </ul>
-    </div>
+      <div>
+        <h1>Ma Liste de Tâches</h1>
+        <input
+            type="text"
+            value={newTaskText}
+            onChange={handleInputChange}
+            placeholder="Nouvelle Tâche"
+        />
+        <button onClick={addTask}>Ajouter Tâche</button>
+        <ul>
+          {tasks.map((task) => (
+              <li key={task._id} style={{ textDecoration: task.completed ? 'line-through' : 'none' }}>
+                {task.text}
+              </li>
+          ))}
+        </ul>
+      </div>
   );
 }

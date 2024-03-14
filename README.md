@@ -24,7 +24,7 @@ Votre mission consiste à enrichir cette application de base en y ajoutant des f
 
 ## Structure du Projet
 
-- `pages/` : Contient les fichiers de page de l'application Next.js, y compris le point d'entrée principal `index.js`.
+- `pages/` : Contient les fichiers de page de l'application Next.js, y compris le point d'entrée principal `tasks.js`.
 - `styles/` : Contient les fichiers CSS globaux, y compris `globals.css` pour les styles de base.
 - `public/` : Contient les ressources statiques comme le favicon.
 
