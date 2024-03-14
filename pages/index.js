@@ -60,9 +60,9 @@ export default function Home() {
         }
     };
 
-    const toggleCompletion = (id) => {
+    const toggleCompletion = (_id) => {
         const newTasks = tasks.map((task) => {
-            if (task.id === id) {
+            if (task._id === _id) {
                 return { ...task, completed: !task.completed };
             }
             return task;
@@ -82,7 +82,7 @@ export default function Home() {
             <ul>
                 {tasks.map((task) => (
                     <li key={task._id} style={{ textDecoration: task.completed ? "line-through" : "none" }}>
-                        {task.title}
+                        <p className="taskTitle">{task.title}</p>
                         <div id="listButtons">
                             <button onClick={() => toggleCompletion(task._id)}>
                                 {task.completed ? "Marquer comme non complétée" : "Marquer comme complétée"}

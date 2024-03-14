@@ -44,19 +44,23 @@ li {
     border-radius: 5px;
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: start;
+    gap: 8px;
 }
+
 .taskTitle {
     padding: 8px 16px;
-    background-color: #ccc;
     border-radius: 4px;
+    background-color: #eee;
     min-width: 200px;
+    width: fit-content;
+    font-weight: 600;
 }
 
 #listButtons {
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: start;
     gap: 8px;
 }
 
