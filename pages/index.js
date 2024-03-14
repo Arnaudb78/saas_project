@@ -57,7 +57,7 @@ export default function Home() {
                             <button onClick={() => toggleCompletion(task._id)}>
                                 {task.completed ? "Marquer comme non complétée" : "Marquer comme complétée"}
                             </button>
-                            <button onClick={() => deleteTask(task.id)} className="buttonSupp">
+                            <button onClick={() => deleteTask(task._id)} className="buttonSupp">
                                 {"Supprimer"}
                             </button>
                         </div>
