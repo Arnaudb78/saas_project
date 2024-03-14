@@ -33,12 +33,24 @@ export default function Home() {
     return (
         <div>
             <h1>Ma Liste de Tâches</h1>
-            <input type="text" value={newTaskText} onChange={handleInputChange} placeholder="Nouvelle Tâche" />
-            <button onClick={addTask}>Ajouter Tâche</button>
+            <div id="addSection">
+                <input type="text" value={newTaskText} onChange={handleInputChange} placeholder="Nouvelle Tâche" />
+                <button className="buttonAdd" onClick={addTask}>
+                    Ajouter Tâche
+                </button>
+            </div>
             <ul>
                 {tasks.map((task) => (
                     <li key={task._id} style={{ textDecoration: task.completed ? "line-through" : "none" }}>
                         {task.title}
+                        <div id="listButtons">
+                            <button onClick={() => toggleCompletion(task.id)}>
+                                {task.completed ? "Marquer comme non complétée" : "Marquer comme complétée"}
+                            </button>
+                            <button onClick={() => deleteTask(task.id)} className="buttonSupp">
+                                {"Supprimer"}
+                            </button>
+                        </div>
                     </li>
                 ))}
             </ul>
