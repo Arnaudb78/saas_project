@@ -30,6 +30,16 @@ export default function Home() {
         setNewTaskText(event.target.value);
     };
 
+    const toggleCompletion = (_id) => {
+        const newTasks = tasks.map((task) => {
+            if (task._id === _id) {
+                return { ...task, completed: !task.completed };
+            }
+            return task;
+        });
+        setTasks(newTasks);
+    };
+
     return (
         <div>
             <h1>Ma Liste de Tâches</h1>
@@ -42,9 +52,9 @@ export default function Home() {
             <ul>
                 {tasks.map((task) => (
                     <li key={task._id} style={{ textDecoration: task.completed ? "line-through" : "none" }}>
-                        {task.title}
+                        <p className="taskTitle">{task.title}</p>
                         <div id="listButtons">
-                            <button onClick={() => toggleCompletion(task.id)}>
+                            <button onClick={() => toggleCompletion(task._id)}>
                                 {task.completed ? "Marquer comme non complétée" : "Marquer comme complétée"}
                             </button>
                             <button onClick={() => deleteTask(task.id)} className="buttonSupp">
