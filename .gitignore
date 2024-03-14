@@ -26,3 +26,4 @@ vercel
 # Fichiers de système d'exploitation
 .DS_Store
 Thumbs.db
+.env
