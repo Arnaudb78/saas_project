@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 export default function Home() {
     const [tasks, setTasks] = useState([]);
     const [newTaskText, setNewTaskText] = useState("");
+    const [editingTaskId, setEditingTaskId] = useState(null);
+    const [editingText, setEditingText] = useState("");
 
     useEffect(() => {
         const fetchTasks = async () => {
@@ -19,7 +21,7 @@ export default function Home() {
         };
 
         fetchTasks();
-    }, []); // Effectuer la requête une seule fois après le premier rendu
+    }, []);
 
     const addTask = async () => {
         try {
@@ -32,12 +34,12 @@ export default function Home() {
             });
 
             if (!response.ok) {
-                throw new Error("Échec de la requête : ${response.status}");
+                throw new Error(`Échec de la requête : ${response.status}`);
             }
 
             const newTask = await response.json();
             setTasks([...tasks, newTask]);
-            setNewTaskText(""); // Efface le champ du formulaire après l'ajout de la tâche
+            setNewTaskText("");
         } catch (error) {
             console.error("Erreur lors de la création de la tâche", error);
         }
@@ -53,11 +55,53 @@ export default function Home() {
                 throw new Error("Failed to delete task");
             }
 
-            // Si la suppression réussit, mettez à jour l'état des tâches pour exclure la tâche supprimée.
             setTasks(tasks.filter((task) => task._id !== taskId));
         } catch (error) {
             console.error("Erreur lors de la suppression de la tâche", error);
         }
+    };
+
+    const startEditing = (task) => {
+        setEditingTaskId(task._id);
+        setEditingText(task.title);
+    };
+
+    const handleEditChange = (e) => {
+        setEditingText(e.target.value);
+    };
+
+    const saveEdit = async () => {
+        try {
+            // Ici, vous devriez envoyer la mise à jour à votre API
+            const response = await fetch(`/api/tasks?id=${editingTaskId}`, {
+                method: "PUT", // Supposant que votre API utilise PUT pour les mises à jour
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ title: editingText }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Échec de la requête : ${response.status}`);
+            }
+
+            const updatedTask = await response.json();
+            const updatedTasks = tasks.map((task) => (task._id === editingTaskId ? updatedTask : task));
+            setTasks(updatedTasks);
+            setEditingTaskId(null); // Quitter le mode édition
+        } catch (error) {
+            console.error("Erreur lors de la mise à jour de la tâche", error);
+        }
+    };
+
+    const toggleCompletion = (_id) => {
+        const newTasks = tasks.map((task) => {
+            if (task._id === _id) {
+                return { ...task, completed: !task.completed };
+            }
+            return task;
+        });
+        setTasks(newTasks);
     };
 
     return (
@@ -71,16 +115,30 @@ export default function Home() {
             </div>
             <ul>
                 {tasks.map((task) => (
-                    <li key={task._id} style={{ textDecoration: task.completed ? "line-through" : "none" }}>
-                        <p className="taskTitle">{task.title}</p>
-                        <div id="listButtons">
-                            <button onClick={() => toggleCompletion(task._id)}>
-                                {task.completed ? "Marquer comme non complétée" : "Marquer comme complétée"}
-                            </button>
-                            <button onClick={() => deleteTask(task._id)} className="buttonSupp">
-                                {"Supprimer"}
-                            </button>
-                        </div>
+                    <li key={task._id}>
+                        {editingTaskId === task._id ? (
+                            <>
+                                <input type="text" value={editingText} onChange={handleEditChange} />
+                                <button onClick={saveEdit}>Sauvegarder</button>
+                            </>
+                        ) : (
+                            <>
+                                <p className="taskTitle" style={{ textDecoration: task.completed ? "line-through" : "none" }}>
+                                    {task.title}
+                                </p>
+                                <div id="listButtons">
+                                    <button onClick={() => startEditing(task)}>{"Modifier"}</button>
+                                    <button
+                                        onClick={() => toggleCompletion(task._id)}
+                                        style={{ textDecoration: task.completed ? "line-through" : "none" }}>
+                                        {task.completed ? "Marquer comme non complétée" : "Marquer comme complétée"}
+                                    </button>
+                                    <button onClick={() => deleteTask(task._id)} className="buttonSupp">
+                                        {"Supprimer"}
+                                    </button>
+                                </div>
+                            </>
+                        )}
                     </li>
                 ))}
             </ul>

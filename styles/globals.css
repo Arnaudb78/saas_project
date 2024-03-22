@@ -44,7 +44,7 @@ li {
     border-radius: 5px;
     display: flex;
     justify-content: space-between;
-    align-items: start;
+    align-items: center;
     gap: 8px;
 }
 
@@ -60,8 +60,9 @@ li {
 #listButtons {
     display: flex;
     justify-content: center;
-    align-items: start;
+    align-items: center;
     gap: 8px;
+    flex-wrap: wrap;
 }
 
 button {
@@ -90,9 +91,4 @@ button {
 
 button:hover {
     background: #0056b3;
-}
-
-.completed {
-    text-decoration: line-through;
-    color: #777;
 }

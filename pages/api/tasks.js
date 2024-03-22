@@ -1,4 +1,3 @@
-// pages/api/task.js
 import dbConnect from "../../lib/mongodb";
 import Task from "../../models/Task";
 
@@ -19,9 +18,30 @@ export default async function handler(req, res) {
             // Code pour gérer les erreurs...
             res.status(500).json({ success: false, error: error.message });
         }
+    } else if (req.method === "PUT") {
+        try {
+            const { id } = req.query; // Assurez-vous de passer l'ID correctement dans la requête client
+            const taskData = req.body;
+
+            // Mettre à jour la tâche en utilisant son ID.
+            // Assurez-vous que la structure de taskData correspond à votre modèle Task.
+            const updatedTask = await Task.findByIdAndUpdate(id, taskData, { new: true });
+            // L'option { new: true } garantit que le document renvoyé est après la mise à jour
+
+            if (!updatedTask) {
+                res.status(404).json({ success: false, message: "Task not found" });
+                return;
+            }
+
+            res.status(200).json(updatedTask);
+        } catch (error) {
+            res.status(500).json({ success: false, error: error.message });
+        }
     } else if (req.method === "GET") {
         try {
-            const tasks = await Task.find({});
+            // Je veut sort en ascendant mais je n'ai pas de createdAt
+            const tasks = await Task.find({}).sort({ _id: -1 });
+
             res.status(200).json(tasks);
         } catch (error) {
             res.status(500).json({ success: false, error: error.message });
