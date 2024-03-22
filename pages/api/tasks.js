@@ -9,6 +9,10 @@ export default async function handler(req, res) {
         try {
             const { id } = req.query;
             const deletedTask = await Task.findByIdAndDelete(id);
+            if (!deletedTask) {
+                res.status(404).json({ success: false, message: "Task not found" });
+                return;
+            }
             // Code pour gérer la suppression de la tâche...
             res.status(200).json({ success: true, message: "Task deleted successfully" });
         } catch (error) {

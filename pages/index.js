@@ -32,7 +32,7 @@ export default function Home() {
             });
 
             if (!response.ok) {
-                throw new Error(`Échec de la requête : ${response.status}`);
+                throw new Error("Échec de la requête : ${response.status}");
             }
 
             const newTask = await response.json();
@@ -45,7 +45,7 @@ export default function Home() {
 
     const deleteTask = async (taskId) => {
         try {
-            const response = await fetch(`/api/task/${taskId}`, {
+            const response = await fetch(`/api/tasks?id=${taskId}`, {
                 method: "DELETE",
             });
 
@@ -58,16 +58,6 @@ export default function Home() {
         } catch (error) {
             console.error("Erreur lors de la suppression de la tâche", error);
         }
-    };
-
-    const toggleCompletion = (_id) => {
-        const newTasks = tasks.map((task) => {
-            if (task._id === _id) {
-                return { ...task, completed: !task.completed };
-            }
-            return task;
-        });
-        setTasks(newTasks);
     };
 
     return (
