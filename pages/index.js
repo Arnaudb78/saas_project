@@ -94,14 +94,35 @@ export default function Home() {
         }
     };
 
-    const toggleCompletion = (_id) => {
-        const newTasks = tasks.map((task) => {
-            if (task._id === _id) {
-                return { ...task, completed: !task.completed };
+    const toggleCompletion = async (_id) => {
+        // Trouver la tâche à mettre à jour
+        const taskToUpdate = tasks.find((task) => task._id === _id);
+        if (!taskToUpdate) return;
+
+        try {
+            // Envoyer une requête PUT pour mettre à jour l'état "completed" de la tâche
+            const response = await fetch(`/api/tasks?id=${_id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ completed: !taskToUpdate.completed }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Échec de la requête : ${response.status}`);
             }
-            return task;
-        });
-        setTasks(newTasks);
+
+            // Récupérer la tâche mise à jour
+            const updatedTask = await response.json();
+
+            // Mettre à jour l'état local avec la tâche mise à jour
+            const updatedTasks = tasks.map((task) => (task._id === _id ? { ...task, completed: updatedTask.completed } : task));
+
+            setTasks(updatedTasks);
+        } catch (error) {
+            console.error("Erreur lors de la mise à jour de la tâche", error);
+        }
     };
 
     return (
